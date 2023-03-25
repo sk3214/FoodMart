@@ -1,0 +1,187 @@
+Angular 2
+
+=================typeScript============================
+
+-let vs var
+	for(var i=0 ... ){..}
+	console.log(i)
+
+-enumerations
+	enum Color { Red:0, Blue=1}
+
+-type assertions
+	(<string>msg).substring()
+	(msg as string).substring()
+
+-properties
+	class Point{
+		constructor(private _x?: number){}
+
+		get x(){ return this._x;}
+
+		set x(value){ this._x = value;}
+	}
+
+	point.x = 2 //method behaves like an attribute
+
+========Displaying Data and Handling Events============
+
+
+-string interpolation
+	{{ value_in_ts_file }}
+
+-dependency injection
+	no need to change the constructor usages when edited,
+	follows singleton design pattern
+
+-property binding
+	<img [src]="imageUrl"
+
+--atribute binding
+	html is different from DOM. Attributes in html wont have 
+	the same name as properties of DOM
+	so we map the html attr as -> <td [attr.colspan]="colSpan"></td>
+
+--class binding
+	<button [class.btn-primary]="isActive">
+	isActive=true
+
+--style binding
+	<button [style.backgroundColor]="isActive? 'blue' : 'white'">
+	List of properties -> google 'DOM obj style' w3 link
+
+-event binding
+	<button (click)="onSave()"></button>
+
+	if you want access to event obj then ->
+	<button (click)="onSave($event)"></button>
+	onSave($event){ console.log($event);}
+
+	Event bubbling -> (to stop) -> $event.stopPropogation()
+
+-event filtering
+	<input (keyup.enter)="method()"></input>
+	method(){console.log("ENter was pressed")}
+
+-template variables
+	<input #email (keyup.enter)="method(email.value)"/>
+	method(emailValue){console.log(emailValue)}
+
+-two way binding
+	for this to work we need to add in imports in FormsModule in app.module.ts
+	import {FormsModule} from '@angular/forms';
+
+	<input [(ngModel)]="email"/>
+	email="you@gmail.com"
+
+-pipes
+	built in => Uppercase, Lowercase, Decimal, Percent, 
+	number:'1.2-2' => 1 digit before decimal, 2 places max & 2 places min (rounds off)
+	currency:'IND':true:'3.2-2'
+	date:'shortDate'
+
+	custom pipes => pipe transform
+
+
+========Building Re-usable Components=======================
+
+-aliasing input fields
+	@Input('is-favorite') isSelected : boolean
+	<Component [is-favorite]="post.isFavorite">
+
+-output
+	<Component (change)="OnFavoriteClicked()">
+
+	@Output() change = new EventEmitter();
+
+	method(){
+		this.change.emit();
+	}
+
+-pass html content => use ng-content
+	//child-component.html
+	<div>
+		<ng-content select=".heading"></ng-content>
+	</div>
+
+	//parent-component.html
+	<child>
+		<div class="heading">Hello</div>
+	</child>
+
+-render the above without extra wrapper div
+	=> use ng-container in parent-component.html
+
+	<child>
+		<ng-container class="heading">Hello</ng-container>
+	</child>
+
+===================Directives===================================
+
+-ngIf
+	[ else only available in Angular 4 ]
+
+	Approach 1
+	<div *ngIf="courses.length > 0; else noCourses">{{ courses.length}}</div>
+	<ng-template #noCourses> No Courses </ng-template>
+
+	Approach 2
+	<div *ngIf="courses.length > 0; then Courses else noCourses"></div>
+	<ng-template #Courses> {{ courses.length}} </ng-template>
+	<ng-template #noCourses> No Courses </ng-template>
+
+-hidden property
+	Stays in the dom, just hidden
+	<img [hidden]="expression"/>
+
+-ngSwitch
+	viewmode = "map"
+	<div [ngSwitch]="viewMode">
+		<div *ngSwitchCase="'map'"> Map </div>
+		<div *ngSwitchCase="'list'"> List </div>
+		<div *ngSwitchDefault> Otherwise </div>
+	</div>
+
+-ngFor
+	<div *ngFor="let item of list; index as i">
+		{{i}}
+	</div>
+	For more aliases, check ngForOf in angular.io
+
+	TRACKBY CONCEPT:- When you refresh a list, all the items are loaded again 
+	even if there were same as previous. This happens bcos items are by default 
+	uniquely identified (tracked by) on the basis of memory location.
+	We can change this trackBy property to the unique key of that item.
+	This decreases the loading time and increases performance
+
+	eg
+	<!--Note: Function round brackets are not used in trackCourse-->
+	<div *ngFor="let item of list; trackBy:traceCourse">
+		{{item.name}}
+	</div>
+
+	trackCourse(index,course){
+		return course? course.id : undefined;
+	}
+
+-the leading asterisk:
+	it basically rewrites the code ,i.e replaces it by ng-template and binds to the ngIf property
+
+
+-ngClass
+	helps not to repeat class binding more often
+	[ngClass]="{
+		'ng-primary' : !isDanger,
+		'ng-danger': isDanger
+	}"
+
+-ngStyle
+	same as above
+
+-safe traversal operator
+	<div>{{ item.object?.id }}</div>
+
+=========================================================================
+
+
+
